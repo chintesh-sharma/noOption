@@ -1,0 +1,13 @@
+<resources>
+    <string name="accessibility_service_desc">
+    FocusLock accessibility service for blocking apps
+</string>
+
+    <string name="gemini_api_key">AIzaSyD68adhCny0XCylHScQHgZVUKE77jbBYAg</string>
+
+
+    <string name="app_name">noOption</string>
+
+    <string name="block_default">Blocked. Stay focused 💪</string>
+
+</resources>
