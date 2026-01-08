@@ -2,15 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--  REQUIRED FOR GEMINI / INTERNET CALLS -->
+    <!-- REQUIRED -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!--  REQUIRED FOR SCREEN TIME / USAGE ACCESS -->
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
         tools:ignore="ProtectedPermissions" />
 
-    <!--  Package visibility (Android 11+) -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -26,57 +24,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NoOption">
 
-        <activity
-            android:name=".WebsiteTimerActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".PermanentWebsiteSelectionActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".PermanentAppsViewActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".FocusTimerActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".PermanentSelectionActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".AppSelectionActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".PermissionSetupActivity"
+        <activity android:name=".WebsiteTimerActivity" android:exported="false" />
+        <activity android:name=".PermanentWebsiteSelectionActivity" android:exported="false" />
+        <activity android:name=".PermanentAppsViewActivity" android:exported="false" />
+        <activity android:name=".FocusTimerActivity" android:exported="false" />
+        <activity android:name=".PermanentSelectionActivity" android:exported="false" />
+        <activity android:name=".AppSelectionActivity" android:exported="false" />
+        <activity android:name=".PermissionSetupActivity"
             android:excludeFromRecents="true"
             android:exported="false" />
+        <activity android:name=".OnboardingActivity" android:exported="false" />
 
-        <activity
-            android:name=".OnboardingActivity"
-            android:exported="false" />
-
-        <!--  Blocking screen -->
+        <!-- ✅ BLOCK SCREEN (FIXED) -->
         <activity
             android:name=".BlockActivity"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:launchMode="singleTask"
-            android:taskAffinity="" />
+            android:launchMode="singleInstance" />
 
-        <!--  Dashboard -->
+        <!-- ✅ DASHBOARD (FIXED) -->
         <activity
             android:name=".DashboardActivity"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:finishOnTaskLaunch="true"
-            android:launchMode="singleTask"
-            android:taskAffinity="" />
+            android:launchMode="singleTask" />
 
-        <!--  APP LAUNCHER -->
+        <!-- APP LAUNCHER -->
         <activity
             android:name=".MainActivity"
             android:excludeFromRecents="true"
@@ -87,7 +60,7 @@
             </intent-filter>
         </activity>
 
-        <!--  Accessibility Service -->
+        <!-- ACCESSIBILITY -->
         <service
             android:name=".MyAccessibilityService"
             android:exported="false"
@@ -95,26 +68,23 @@
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
-
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_config" />
         </service>
 
+        <!-- DEVICE ADMIN -->
         <receiver
             android:name=".MyDeviceAdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN"
             android:exported="false">
-
             <meta-data
                 android:name="android.app.device_admin"
                 android:resource="@xml/device_admin_config" />
-
             <intent-filter>
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
-
 
     </application>
 </manifest>

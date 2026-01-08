@@ -17,10 +17,14 @@ public class DashboardActivity extends AppCompatActivity {
     TextView tvScreenTime, tvFocusStatus, tvPermanentApps, tvWeeklySummary;
     Button btnEditBlocked, btnPermanentApps, btnReschedule;
 
+    SharedPreferences prefs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+
+        prefs = getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
 
         tvScreenTime = findViewById(R.id.tvScreenTime);
         tvFocusStatus = findViewById(R.id.tvFocusStatus);
@@ -31,8 +35,6 @@ public class DashboardActivity extends AppCompatActivity {
         btnPermanentApps = findViewById(R.id.btnPermanentApps);
         btnReschedule = findViewById(R.id.btnReschedule);
 
-        loadStatus();
-
         btnEditBlocked.setOnClickListener(v -> {
             Intent intent = new Intent(this, AppSelectionActivity.class);
             intent.putExtra("EDIT_MODE", true);
@@ -40,12 +42,17 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         btnPermanentApps.setOnClickListener(v ->
-                startActivity(new Intent(this, PermanentAppsViewActivity.class))
+                startActivity(
+                        new Intent(this, PermanentAppsViewActivity.class)
+                )
         );
 
-        btnReschedule.setOnClickListener(v ->
-                startActivity(new Intent(this, FocusTimerActivity.class))
-        );
+        // 🔥 TEMP apps reschedule ONLY (EDIT MODE)
+        btnReschedule.setOnClickListener(v -> {
+            Intent i = new Intent(this, FocusTimerActivity.class);
+            i.putExtra("EDIT_MODE", true);
+            startActivity(i);
+        });
     }
 
     @Override
@@ -56,44 +63,43 @@ public class DashboardActivity extends AppCompatActivity {
 
     private void loadStatus() {
 
-        SharedPreferences prefs =
-                getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
-
-        // Focus status
-        boolean focusOn = isAnyFocusActiveNow(prefs);
+        // 🔥 Focus status
+        boolean focusOn = isAnyFocusActiveNow();
         tvFocusStatus.setText(
                 focusOn ? "Focus Mode: ON" : "Focus Mode: OFF"
         );
 
-        //  Screen time (REAL - LOCAL)
+        // ⏱ Screen time
         long screenTimeMs = getTodayScreenTimeMillis();
         long minutes = screenTimeMs / (1000 * 60);
         tvScreenTime.setText("Today's Screen Time: " + minutes + " min");
 
-        //  Weekly summary (Firebase REMOVED)
+        // 📊 Weekly summary
         tvWeeklySummary.setText("Weekly Screen Time: Coming Soon");
 
-        // Permanent apps
+        // 🔒 Permanent apps (VIEW ONLY)
         Set<String> permanentApps =
-                prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>());
+                prefs.getStringSet(
+                        "PERMANENT_BLOCKED_APPS",
+                        new HashSet<>()
+                );
 
         if (permanentApps.isEmpty()) {
             tvPermanentApps.setText("Permanent Apps: None");
-            btnReschedule.setEnabled(true);
-            btnReschedule.setAlpha(1f);
         } else {
             StringBuilder sb = new StringBuilder("Permanent Apps:\n");
             for (String pkg : permanentApps) {
                 sb.append("• ").append(pkg).append("\n");
             }
             tvPermanentApps.setText(sb.toString());
-
-            btnReschedule.setEnabled(false);
-            btnReschedule.setAlpha(0.5f);
         }
+
+        // ✅ TEMP reschedule ALWAYS allowed
+        btnReschedule.setEnabled(true);
+        btnReschedule.setAlpha(1f);
     }
 
-    private boolean isAnyFocusActiveNow(SharedPreferences prefs) {
+    private boolean isAnyFocusActiveNow() {
 
         Set<String> permanentApps =
                 prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>());
@@ -190,4 +196,3 @@ public class DashboardActivity extends AppCompatActivity {
         return totalTime;
     }
 }
-

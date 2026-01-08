@@ -27,6 +27,8 @@ public class PermanentSelectionActivity extends AppCompatActivity {
     private static final String PREFS = "FOCUS_PREFS";
     private static final String PERMANENT_MSG_KEY = "PERMANENT_BLOCK_MESSAGE";
 
+    boolean readOnly = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,13 +37,19 @@ public class PermanentSelectionActivity extends AppCompatActivity {
         listPermanent = findViewById(R.id.listPermanent);
         btnConfirm = findViewById(R.id.btnConfirmPermanent);
 
-        boolean readOnly =
-                getIntent().getBooleanExtra("READ_ONLY", false);
+        readOnly = getIntent().getBooleanExtra("READ_ONLY", false);
 
         SharedPreferences prefs =
                 getSharedPreferences(PREFS, MODE_PRIVATE);
 
-        //  DATA SOURCE DECISION (UNCHANGED)
+        // 🚫 Pause blocking ONLY during actual setup
+        if (!readOnly) {
+            prefs.edit()
+                    .putBoolean("SETUP_IN_PROGRESS", true)
+                    .apply();
+        }
+
+        // 🔥 DATA SOURCE
         Set<String> sourcePackages;
 
         if (readOnly) {
@@ -86,17 +94,14 @@ public class PermanentSelectionActivity extends AppCompatActivity {
                     }
                 }
 
-                //  FINAL BLOCKED = TEMP + PERMANENT (UNCHANGED)
-                Set<String> finalBlocked = new HashSet<>(sourcePackages);
-
+                // 🔒 SAVE PERMANENT APPS (NO MIXING WITH TEMP)
                 prefs.edit()
                         .putStringSet("PERMANENT_BLOCKED_APPS", permanentApps)
-                        .putStringSet("BLOCKED_APPS", finalBlocked)
                         .remove("TEMP_SELECTED_APPS")
                         .apply();
 
                 // ==========================
-                //  GEMINI (PERMANENT FALLBACK ONLY)
+                // 🤖 GEMINI (PERMANENT FALLBACK ONLY)
                 // ==========================
                 GeminiTextHelper.generateText(
                         "Permanent app blocking activated. Send a short funny motivational line.",
@@ -104,19 +109,21 @@ public class PermanentSelectionActivity extends AppCompatActivity {
 
                             @Override
                             public void onResult(String text) {
-                                if (text != null && !text.trim().isEmpty()) {
-                                    //  Save ONLY ONCE
-                                    if (!prefs.contains(PERMANENT_MSG_KEY)) {
-                                        prefs.edit()
-                                                .putString(PERMANENT_MSG_KEY, text.trim())
-                                                .apply();
-                                    }
+                                if (text != null
+                                        && !text.trim().isEmpty()
+                                        && !prefs.contains(PERMANENT_MSG_KEY)) {
+
+                                    prefs.edit()
+                                            .putString(
+                                                    PERMANENT_MSG_KEY,
+                                                    text.trim()
+                                            )
+                                            .apply();
                                 }
                             }
 
                             @Override
                             public void onError(String error) {
-                                //  Default fallback ONLY if not already saved
                                 if (!prefs.contains(PERMANENT_MSG_KEY)) {
                                     prefs.edit()
                                             .putString(
@@ -129,15 +136,34 @@ public class PermanentSelectionActivity extends AppCompatActivity {
                         }
                 );
 
-                //  NEXT STEP = TIME SET (UNCHANGED)
-                Intent intent =
+                // ▶️ Resume blocking AFTER setup
+                prefs.edit()
+                        .putBoolean("SETUP_IN_PROGRESS", false)
+                        .apply();
+
+                // ▶️ NEXT STEP (UNCHANGED)
+                startActivity(
                         new Intent(
                                 PermanentSelectionActivity.this,
                                 FocusTimerActivity.class
-                        );
-                startActivity(intent);
+                        )
+                );
                 finish();
             });
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // 🛡️ Safety: resume blocking ONLY if setup screen
+        if (!readOnly) {
+            getSharedPreferences(PREFS, MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("SETUP_IN_PROGRESS", false)
+                    .apply();
+        }
+    }
 }
+

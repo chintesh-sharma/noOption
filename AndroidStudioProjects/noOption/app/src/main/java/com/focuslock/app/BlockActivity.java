@@ -1,6 +1,6 @@
 package com.focuslock.app;
 
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -12,22 +12,21 @@ import java.util.Random;
 
 public class BlockActivity extends AppCompatActivity {
 
-    TextView tvBlockMessage;
+    private TextView tvBlockMessage;
 
-    //  Offline fun fallback messages
-    private static final String[] FUN_MESSAGES = {
-            "Focus kar bhai 😤 You got this!",
-            "Bas thoda sa aur 💪",
-            "Distraction ruk, success aane de 🚀",
-            "Phone band, future ON 🔥",
-            "Aaj mehnat, kal result 😎"
+    private static final String[] MESSAGES = {
+            "Focus mode ON 🔒",
+            "Distraction not allowed 🚫",
+            "Stay focused 💪",
+            "Back to work 😤",
+            "Phone later, success first 🚀"
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Prevent screenshots / recent preview
+        // 🔐 Prevent screenshots only (NO LOCK)
         getWindow().setFlags(
                 WindowManager.LayoutParams.FLAG_SECURE,
                 WindowManager.LayoutParams.FLAG_SECURE
@@ -37,47 +36,28 @@ public class BlockActivity extends AppCompatActivity {
 
         tvBlockMessage = findViewById(R.id.tvBlockMessage);
 
-        //  Disable BACK button
-        getOnBackPressedDispatcher().addCallback(this,
+        tvBlockMessage.setText(
+                MESSAGES[new Random().nextInt(MESSAGES.length)]
+        );
+
+        // ✅ CORRECT BACK HANDLING (NO ERROR)
+        getOnBackPressedDispatcher().addCallback(
+                this,
                 new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
-                        // BACK disabled
+                        goHome();
                     }
-                });
-
-        showBlockMessage();
+                }
+        );
     }
 
-    private void showBlockMessage() {
-
-        SharedPreferences prefs =
-                getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
-
-        //  Try Gemini runtime message (pre-generated)
-        String message =
-                prefs.getString("RUNTIME_GEMINI_MESSAGE", null);
-
-        // If Gemini not available → random fallback
-        if (message == null || message.trim().isEmpty()) {
-            message = FUN_MESSAGES[new Random()
-                    .nextInt(FUN_MESSAGES.length)];
-        }
-
-        //  Show instantly (NO DELAY, NO FAIL)
-        tvBlockMessage.setText(message);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // intentionally empty
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // keep alive
+    private void goHome() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }
 

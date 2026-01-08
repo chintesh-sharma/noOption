@@ -26,17 +26,16 @@ public class AppSelectionActivity extends AppCompatActivity {
     Button btnSave;
     EditText etSearch;
 
-    //  App models
     ArrayList<AppItem> allApps = new ArrayList<>();
     ArrayList<AppItem> visibleApps = new ArrayList<>();
 
-    //  Remember checked apps (ONLY EDITABLE)
+    // Editable only
     Set<String> checkedPackages = new HashSet<>();
 
     ArrayAdapter<String> adapter;
     SharedPreferences prefs;
 
-    boolean isEditMode;
+    boolean isEditMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +46,7 @@ public class AppSelectionActivity extends AppCompatActivity {
 
         prefs = getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
 
-        //  Disable blocking while editing / setup
+        // 🚫 Pause blocking ONLY while user is here
         prefs.edit()
                 .putBoolean("SETUP_IN_PROGRESS", true)
                 .apply();
@@ -59,7 +58,7 @@ public class AppSelectionActivity extends AppCompatActivity {
         loadInstalledApps();
         setupAdapter();
 
-        //  Load already blocked (EXCEPT permanent)
+        // 🔒 Already blocked (EXCEPT permanent)
         Set<String> alreadyBlocked =
                 prefs.getStringSet("BLOCKED_APPS", new HashSet<>());
 
@@ -77,11 +76,11 @@ public class AppSelectionActivity extends AppCompatActivity {
 
         btnSave.setOnClickListener(v -> {
 
-            //  VERY IMPORTANT FIX
+            // 🔥 CORE FIX
             rebuildCheckedFromUI();
 
             if (isEditMode) {
-                //  DASHBOARD EDIT FLOW
+                // ✏️ DASHBOARD EDIT
 
                 Set<String> finalBlocked = new HashSet<>(checkedPackages);
                 finalBlocked.addAll(permanentApps); // permanent always preserved
@@ -97,7 +96,7 @@ public class AppSelectionActivity extends AppCompatActivity {
                 finish();
 
             } else {
-                //  FIRST TIME SETUP FLOW
+                // 🆕 FIRST TIME SETUP
 
                 prefs.edit()
                         .putStringSet(
@@ -107,13 +106,29 @@ public class AppSelectionActivity extends AppCompatActivity {
                         .putBoolean("SETUP_IN_PROGRESS", false)
                         .apply();
 
-                startActivity(new Intent(this, PermanentSelectionActivity.class));
+                startActivity(
+                        new Intent(this, PermanentSelectionActivity.class)
+                );
                 finish();
             }
         });
     }
 
-    //  LOAD APPS (SKIP PERMANENT ONES)
+    // ==============================
+    // 🛡️ SAFETY: resume blocking if user exits unexpectedly
+    // ==============================
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        prefs.edit()
+                .putBoolean("SETUP_IN_PROGRESS", false)
+                .apply();
+    }
+
+    // ==============================
+    // LOAD INSTALLED APPS
+    // ==============================
     private void loadInstalledApps() {
 
         Set<String> permanentApps =
@@ -152,6 +167,7 @@ public class AppSelectionActivity extends AppCompatActivity {
 
     private void setupSearch() {
         etSearch.addTextChangedListener(new TextWatcher() {
+
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
@@ -178,7 +194,9 @@ public class AppSelectionActivity extends AppCompatActivity {
         });
     }
 
-    //  CORE FIX: rebuild from UI state
+    // ==============================
+    // CORE STATE SYNC
+    // ==============================
     private void rebuildCheckedFromUI() {
         checkedPackages.clear();
 
@@ -206,7 +224,9 @@ public class AppSelectionActivity extends AppCompatActivity {
         return names;
     }
 
-    // 🔹 Model
+    // ==============================
+    // MODEL
+    // ==============================
     static class AppItem {
         String appName;
         String packageName;
