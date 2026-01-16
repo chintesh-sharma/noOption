@@ -47,6 +47,14 @@
             android:layout_height="wrap_content"
             android:text="Enable Screen Time Access"/>
 
+        <Button
+            android:id="@+id/btnAutostart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable Background Autostart"
+            android:layout_marginTop="12dp"/>
+
+
 
         <!-- Continue -->
         <Button

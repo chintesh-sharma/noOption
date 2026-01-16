@@ -166,4 +166,3 @@ public class PermanentSelectionActivity extends AppCompatActivity {
         }
     }
 }
-

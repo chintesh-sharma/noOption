@@ -14,7 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class PermissionSetupActivity extends AppCompatActivity {
 
-    Button btnAccessibility, btnBattery, btnAppSettings, btnUsageAccess, btnContinue;
+    Button btnAccessibility, btnBattery, btnAppSettings,
+            btnUsageAccess, btnAutostart, btnContinue;
 
     private static final int REQ_DEVICE_ADMIN = 1001;
 
@@ -27,7 +28,10 @@ public class PermissionSetupActivity extends AppCompatActivity {
         btnBattery = findViewById(R.id.btnBattery);
         btnAppSettings = findViewById(R.id.btnAppSettings);
         btnUsageAccess = findViewById(R.id.btnUsageAccess);
+        btnAutostart = findViewById(R.id.btnAutostart); // ✅ NEW
         btnContinue = findViewById(R.id.btnContinue);
+
+        // ---------------- EXISTING ----------------
 
         btnAccessibility.setOnClickListener(v ->
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -35,7 +39,9 @@ public class PermissionSetupActivity extends AppCompatActivity {
 
         btnBattery.setOnClickListener(v -> {
             try {
-                startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+                startActivity(
+                        new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                );
             } catch (Exception e) {
                 startActivity(new Intent(Settings.ACTION_SETTINGS));
             }
@@ -46,6 +52,12 @@ public class PermissionSetupActivity extends AppCompatActivity {
         btnUsageAccess.setOnClickListener(v ->
                 startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         );
+
+        // ---------------- NEW : AUTOSTART ----------------
+
+        btnAutostart.setOnClickListener(v -> openAutostartSettings());
+
+        // ---------------- CONTINUE (UNCHANGED) ----------------
 
         btnContinue.setOnClickListener(v -> {
 
@@ -59,12 +71,12 @@ public class PermissionSetupActivity extends AppCompatActivity {
                 return;
             }
 
-            //  STEP 1: Ask Device Admin (STOP here)
             requestDeviceAdmin();
         });
     }
 
-    //  Ask for Device Admin properly
+    // ================= DEVICE ADMIN (UNCHANGED) =================
+
     private void requestDeviceAdmin() {
 
         DevicePolicyManager dpm =
@@ -74,7 +86,6 @@ public class PermissionSetupActivity extends AppCompatActivity {
                 new ComponentName(this, MyDeviceAdminReceiver.class);
 
         if (dpm.isAdminActive(adminComponent)) {
-            // Already granted → move on
             goNext();
             return;
         }
@@ -92,7 +103,6 @@ public class PermissionSetupActivity extends AppCompatActivity {
                 "Direct uninstall rokne ke liye ye permission zaroori hai"
         );
 
-        //  IMPORTANT: wait for result
         startActivityForResult(intent, REQ_DEVICE_ADMIN);
     }
 
@@ -109,10 +119,8 @@ public class PermissionSetupActivity extends AppCompatActivity {
                     new ComponentName(this, MyDeviceAdminReceiver.class);
 
             if (dpm.isAdminActive(adminComponent)) {
-                //  User activated admin
                 goNext();
             } else {
-                //  User cancelled
                 Toast.makeText(
                         this,
                         "Device Admin zaroori hai uninstall protection ke liye",
@@ -122,11 +130,12 @@ public class PermissionSetupActivity extends AppCompatActivity {
         }
     }
 
-    // ️ Move to next step ONLY after admin
     private void goNext() {
         startActivity(new Intent(this, AppSelectionActivity.class));
         finish();
     }
+
+    // ================= CHECKS (UNCHANGED) =================
 
     private boolean isUsageAccessGranted() {
         AppOpsManager appOps =
@@ -163,6 +172,32 @@ public class PermissionSetupActivity extends AppCompatActivity {
                         "Open settings manually",
                         Toast.LENGTH_LONG
                 ).show();
+                startActivity(new Intent(Settings.ACTION_SETTINGS));
+            }
+        }
+    }
+
+    // ================= NEW : AUTOSTART =================
+
+    private void openAutostartSettings() {
+        try {
+            // MIUI Autostart
+            Intent intent = new Intent();
+            intent.setClassName(
+                    "com.miui.securitycenter",
+                    "com.miui.permcenter.autostart.AutoStartManagementActivity"
+            );
+            startActivity(intent);
+
+        } catch (Exception e1) {
+            try {
+                // App info fallback
+                Intent intent =
+                        new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+
+            } catch (Exception e2) {
                 startActivity(new Intent(Settings.ACTION_SETTINGS));
             }
         }

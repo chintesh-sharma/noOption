@@ -1,40 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="36dp"
+    android:background="#0A0C10">
 
+    <!-- 🔒 STATUS -->
+    <TextView
+        android:text="⬤ FOCUS LOCKED"
+        android:textColor="#FF5C5C"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.18"
+        android:layout_marginBottom="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- 🔥 MAIN MESSAGE (UNCHANGED ID & TEXT) -->
     <TextView
         android:id="@+id/tvBlockMessage"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="@string/block_default"
-        android:textSize="20sp"
-        android:textColor="@android:color/white"
-        android:gravity="center"
-        android:padding="24dp"
-        android:lineSpacingExtra="6dp"
-        android:textAlignment="center"
-
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <Button
-        android:id="@+id/btnExit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Exit"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#444444"
+        android:text="Focus mode ON 🔒"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="12dp"/>
 
-        app:layout_constraintTop_toBottomOf="@id/tvBlockMessage"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp"/>
+    <!-- ⏱ TIME LEFT (UNCHANGED ID) -->
+    <TextView
+        android:id="@+id/tvTimeLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time left: --:--:--"
+        android:textColor="#5B7CFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="36dp"/>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

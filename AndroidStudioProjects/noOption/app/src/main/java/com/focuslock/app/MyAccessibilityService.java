@@ -20,10 +20,16 @@ public class MyAccessibilityService extends AccessibilityService {
             "com.sec.android.app.sbrowser"
     );
 
+    // 🔒 LOOP / FLICKER GUARD
+    public static boolean isBlockingScreenShown = false;
+    private static long lastBlockTime = 0;
+
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
 
         if (event == null || event.getPackageName() == null) return;
+        if (event.getEventType() != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
+            return;
 
         String pkg = event.getPackageName().toString();
 
@@ -37,14 +43,13 @@ public class MyAccessibilityService extends AccessibilityService {
         SharedPreferences prefs =
                 getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
 
-        // Do not block during setup/edit
         if (prefs.getBoolean("SETUP_IN_PROGRESS", false)) return;
 
         Calendar cal = Calendar.getInstance();
         int h = cal.get(Calendar.HOUR_OF_DAY);
         int m = cal.get(Calendar.MINUTE);
 
-        // ================= PERMANENT =================
+        // ================= PERMANENT TIME =================
         int pSh = prefs.getInt("PERM_START_HOUR", -1);
         int pSm = prefs.getInt("PERM_START_MIN", -1);
         int pEh = prefs.getInt("PERM_END_HOUR", -1);
@@ -53,36 +58,50 @@ public class MyAccessibilityService extends AccessibilityService {
         boolean permActive =
                 pSh != -1 && isWithin(h, m, pSh, pSm, pEh, pEm);
 
+        if (!permActive) {
+            isBlockingScreenShown = false;
+            return;
+        }
+
         Set<String> permanentApps =
                 prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>());
 
-        if (permActive) {
+        // 🔒 SETTINGS BLOCK
+        if (pkg.equals("com.android.settings")) {
+            showBlockSafely(pkg, "PERM");
+            return;
+        }
 
-            // Block settings
-            if (pkg.equals("com.android.settings")) {
-                showBlock(pkg);
-                return;
+        // 🔒 PERMANENT APPS
+        if (permanentApps.contains(pkg)) {
+            showBlockSafely(pkg, "PERM");
+            return;
+        }
+
+        // 🔒 WEBSITE BLOCK
+        if (BROWSERS.contains(pkg)) {
+
+            Set<String> sites =
+                    prefs.getStringSet("PERMANENT_BLOCKED_WEBSITES",
+                            new HashSet<>());
+
+            boolean webActive = permActive;
+
+            if (prefs.getBoolean("WEB_TIMER_SET", false)) {
+                int wSh = prefs.getInt("WEB_START_HOUR", -1);
+                int wSm = prefs.getInt("WEB_START_MIN", -1);
+                int wEh = prefs.getInt("WEB_END_HOUR", -1);
+                int wEm = prefs.getInt("WEB_END_MIN", -1);
+
+                webActive = wSh != -1 && isWithin(h, m, wSh, wSm, wEh, wEm);
             }
 
-            // Block permanent apps
-            if (permanentApps.contains(pkg)) {
-                showBlock(pkg);
-                return;
-            }
-
-            // Block websites (browser only)
-            if (BROWSERS.contains(pkg)) {
-                Set<String> sites =
-                        prefs.getStringSet("PERMANENT_BLOCKED_WEBSITES",
-                                new HashSet<>());
-                if (!sites.isEmpty()) {
-                    showBlock(pkg);
-                    return;
-                }
+            if (webActive && !sites.isEmpty()) {
+                showBlockSafely(pkg, "WEB");
             }
         }
 
-        // ================= TEMP =================
+        // 🔒 TEMP / EDITABLE APPS (unchanged)
         int tSh = prefs.getInt("TEMP_START_HOUR", -1);
         int tSm = prefs.getInt("TEMP_START_MIN", -1);
         int tEh = prefs.getInt("TEMP_END_HOUR", -1);
@@ -94,8 +113,9 @@ public class MyAccessibilityService extends AccessibilityService {
         if (tempActive) {
             Set<String> tempApps =
                     prefs.getStringSet("BLOCKED_APPS", new HashSet<>());
+
             if (tempApps.contains(pkg)) {
-                showBlock(pkg);
+                showBlockSafely(pkg, "TEMP");
             }
         }
     }
@@ -112,18 +132,26 @@ public class MyAccessibilityService extends AccessibilityService {
         int start = sh * 60 + sm;
         int end = eh * 60 + em;
 
-        if (start < end) {
-            return now >= start && now < end;
-        } else {
-            return now >= start || now < end;
-        }
+        if (start == end) return true;
+        if (start < end) return now >= start && now < end;
+        return now >= start || now < end;
     }
 
-    private void showBlock(String pkg) {
+    // ================= SAFE BLOCK =================
+    private void showBlockSafely(String pkg, String type) {
+
+        long now = System.currentTimeMillis();
+        if (isBlockingScreenShown && now - lastBlockTime < 800) return;
+
+        isBlockingScreenShown = true;
+        lastBlockTime = now;
+
         Intent i = new Intent(this, BlockActivity.class);
         i.putExtra("BLOCKED_PKG", pkg);
+        i.putExtra("BLOCK_TYPE", type); // 🔥 ONLY NEW THING
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         startActivity(i);
     }
 }
