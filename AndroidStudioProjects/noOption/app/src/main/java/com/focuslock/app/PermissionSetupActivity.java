@@ -19,7 +19,6 @@ public class PermissionSetupActivity extends AppCompatActivity {
     Button btnAccessibility, btnBattery, btnAppSettings,
             btnUsageAccess, btnAutostart, btnContinue;
 
-    // 🔹 NEW (for How to use)
     TextView tvHowTo;
 
     private static final int REQ_DEVICE_ADMIN = 1001;
@@ -40,19 +39,16 @@ public class PermissionSetupActivity extends AppCompatActivity {
         btnAutostart = findViewById(R.id.btnAutostart);
         btnContinue = findViewById(R.id.btnContinue);
 
-        // 🔹 NEW: How to use TextView
         tvHowTo = findViewById(R.id.tvHowTo);
 
-        // ---------------- EXISTING ----------------
+        // ================= EXISTING LOGIC =================
 
         btnAccessibility.setOnClickListener(v ->
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         );
 
         btnBattery.setOnClickListener(v -> {
-
             prefs.edit().putBoolean("BATTERY_STEP_DONE", true).apply();
-
             try {
                 startActivity(
                         new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -63,9 +59,7 @@ public class PermissionSetupActivity extends AppCompatActivity {
         });
 
         btnAppSettings.setOnClickListener(v -> {
-
             prefs.edit().putBoolean("APP_SETTINGS_STEP_DONE", true).apply();
-
             openAppSettingsSafely();
         });
 
@@ -74,13 +68,9 @@ public class PermissionSetupActivity extends AppCompatActivity {
         );
 
         btnAutostart.setOnClickListener(v -> {
-
             prefs.edit().putBoolean("AUTOSTART_STEP_DONE", true).apply();
-
             openAutostartSettings();
         });
-
-        // ---------------- CONTINUE (UNCHANGED) ----------------
 
         btnContinue.setOnClickListener(v -> {
 
@@ -98,12 +88,12 @@ public class PermissionSetupActivity extends AppCompatActivity {
         });
 
         // =================================================
-        // 🔹 NEW: HOW TO USE LINK (ONLY UI HELP)
+        // ✅ HOW TO USE (ONLY UI HELP – NO APP LOGIC TOUCH)
         // =================================================
         tvHowTo.setOnClickListener(v -> {
             Intent intent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://www.youtube.com/watch?v=YOUR_VIDEO_ID")
+                    PermissionSetupActivity.this,
+                    HowToUseActivity.class
             );
             startActivity(intent);
         });
@@ -153,7 +143,7 @@ public class PermissionSetupActivity extends AppCompatActivity {
         }
     }
 
-    // ================= DEVICE ADMIN (UNCHANGED) =================
+    // ================= DEVICE ADMIN =================
 
     private void requestDeviceAdmin() {
 
@@ -213,7 +203,7 @@ public class PermissionSetupActivity extends AppCompatActivity {
         finish();
     }
 
-    // ================= CHECKS (UNCHANGED) =================
+    // ================= CHECKS =================
 
     private boolean isUsageAccessGranted() {
         AppOpsManager appOps =
@@ -254,8 +244,6 @@ public class PermissionSetupActivity extends AppCompatActivity {
             }
         }
     }
-
-    // ================= AUTOSTART (UNCHANGED) =================
 
     private void openAutostartSettings() {
         try {

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.LinearLayout;
+import android.widget.TextView; // ✅ ADD
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,6 +41,17 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         LinearLayout continueLayout = findViewById(R.id.layoutContinue);
+
+        // ✅ ADD ONLY (PRIVACY POLICY CLICK)
+        TextView tvPrivacyPolicy = findViewById(R.id.tvPrivacy);
+        tvPrivacyPolicy.setOnClickListener(v -> {
+            startActivity(
+                    new Intent(
+                            WelcomeActivity.this,
+                            PrivacyPolicyActivity.class
+                    )
+            );
+        });
 
         continueLayout.setOnClickListener(v -> {
             prefs.edit()

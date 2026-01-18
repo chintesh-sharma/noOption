@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#000000">
+
+    <!-- =====================
+         SCROLLABLE CONTENT
+         ===================== -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Privacy Policy &amp; Terms of Use"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Content -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#CCCCCC"
+                android:textSize="13sp"
+                android:lineSpacingExtra="8dp"
+                android:text="
+Last updated: 2026
+
+Welcome to noOption.
+
+noOption is a focus and discipline application designed to help users reduce distractions by restricting access to selected applications and websites during self-defined focus periods. The app is built with privacy, transparency, and user control as its core principles.
+
+USER PRIVACY COMMITMENT
+
+Your privacy is extremely important to us. noOption does not collect, track, store, transmit, sell, or share any personal or sensitive user data.
+
+noOption does NOT collect:
+• Personal identity information (name, email, phone number)
+• Contacts, messages, call history, or notifications
+• Photos, videos, audio files, or media content
+• Location data, GPS coordinates, or IP addresses
+• Browsing history, search queries, or website analytics
+• Device identifiers, advertising IDs, or hardware IDs
+• Login credentials, passwords, or authentication data
+• Payment, banking, or financial information
+
+All app settings, blocked apps, blocked websites, focus schedules, and usage preferences are stored locally on your device only. No information is transmitted to external servers. Uninstalling the app permanently removes all stored data.
+
+PERMISSIONS &amp; WHY THEY ARE REQUIRED
+
+Accessibility Service Permission:
+This permission allows noOption to detect which application or browser screen is currently visible so that blocking rules can be enforced accurately and instantly.
+
+Accessibility is used ONLY to:
+• Detect the foreground application
+• Detect browser screens for website blocking
+• Display a blocking screen when a rule is violated
+
+Accessibility is NEVER used to:
+• Read typed text or passwords
+• Capture keystrokes
+• Record screen content
+• Monitor messages or notifications
+• Collect private or sensitive data
+
+Usage Access Permission:
+Usage access is used to identify which app is currently active and to calculate basic screen time statistics shown inside the app. This data remains completely on-device.
+
+Battery Optimization Exemption:
+Android may restrict background apps to save battery. This permission ensures noOption remains active during focus sessions so blocking works reliably without interruption.
+
+Auto-start Permission (Device Dependent):
+Some devices require auto-start permission to allow noOption to restart automatically after reboot or system cleanup. This ensures consistent enforcement of focus rules.
+
+Device Admin Permission:
+Device admin is used solely to prevent accidental or unauthorized uninstallation while focus mode is active. noOption does NOT perform device wiping, remote control, password changes, or policy enforcement beyond uninstall protection.
+
+
+WEBSITE BLOCKING
+
+
+Website blocking operates only within supported browsers and only during user-selected focus schedules. noOption does not use VPNs, proxies, firewalls, or traffic interception. Blocking is performed locally by detecting visible website addresses using accessibility signals.
+
+USER RESPONSIBILITY &amp; LIMITATIONS
+
+noOption is a self-control and productivity tool. Users are responsible for configuring focus schedules and blocked content. Blocking behavior may vary depending on device manufacturer, Android version, and system optimizations.
+
+noOption does not guarantee productivity outcomes and is not responsible for missed work, deadlines, or personal consequences resulting from app usage.
+
+CHANGES TO THIS POLICY
+
+This Privacy Policy and Terms may be updated to reflect feature improvements or platform requirements. Any updates will be available within the app.
+
+By tapping “I Agree &amp; Continue”, you confirm that you have read, understood, and accepted this Privacy Policy and Terms of Use.
+"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- =====================
+         FIXED BOTTOM BUTTON
+         ===================== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:background="#000000">
+
+        <Button
+            android:id="@+id/btnPrivacyContinue"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="I Agree &amp; Continue"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2979FF"/>
+    </LinearLayout>
+
+</LinearLayout>
