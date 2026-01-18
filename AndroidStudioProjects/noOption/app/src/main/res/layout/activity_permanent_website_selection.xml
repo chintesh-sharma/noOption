@@ -32,6 +32,19 @@
             android:textColor="#9E9E9E"
             android:layout_marginBottom="18dp"/>
 
+        <!-- Warning Box -->
+        <TextView
+            android:id="@+id/tvWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Warning: You can permanently block websites only once during setup. Please confirm carefully."
+            android:textSize="12sp"
+            android:textColor="#FF5252"
+            android:padding="12dp"
+            android:background="#1A1A1A"
+            android:layout_marginBottom="18dp"/>
+
+
         <!-- Website List Container -->
         <LinearLayout
             android:id="@+id/websiteContainer"
