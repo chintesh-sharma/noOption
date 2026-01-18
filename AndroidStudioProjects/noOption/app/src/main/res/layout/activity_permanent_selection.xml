@@ -3,29 +3,63 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="20dp"
+    android:background="#000000">
 
+    <!-- Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select apps for PERMANENT block"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="4dp"/>
 
-    <!-- ✅ ListView with WEIGHT -->
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="These apps will be blocked during permanent focus time"
+        android:textSize="13sp"
+        android:textColor="#9E9E9E"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- Warning -->
+    <TextView
+        android:id="@+id/tvPermanentWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Warning: You can permanently block apps only once during setup. Please confirm carefully."
+        android:textSize="13sp"
+        android:textColor="#FF6B6B"
+        android:background="#1A1A1A"
+        android:padding="12dp"
+        android:lineSpacingExtra="2dp"
+        android:layout_marginBottom="14dp"/>
+
+
+    <!-- App List -->
     <ListView
         android:id="@+id/listPermanent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:choiceMode="multipleChoice"/>
+        android:choiceMode="multipleChoice"
+        android:divider="#1E1E1E"
+        android:dividerHeight="1dp"
+        android:background="#000000"/>
 
+    <!-- Confirm Button -->
     <Button
         android:id="@+id/btnConfirmPermanent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Confirm Permanent Lock"
-        android:layout_marginTop="12dp"/>
+        android:layout_height="54dp"
+        android:text="Save &amp; Continue"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:backgroundTint="#2979FF"
+        android:layout_marginTop="16dp"/>
 
 </LinearLayout>

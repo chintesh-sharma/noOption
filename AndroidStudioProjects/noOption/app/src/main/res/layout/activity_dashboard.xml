@@ -1,114 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#0B0F14">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <!-- TITLE -->
+        <!-- ================= HEADER ================= -->
+
         <TextView
             android:text="Focus Dashboard"
-            android:textSize="22sp"
+            android:textSize="26sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-
-        <!-- DAILY SCREEN TIME -->
-        <TextView
-            android:id="@+id/tvScreenTime"
-            android:text="Today's Screen Time: 0 min"
-            android:textSize="18sp"
-            android:layout_marginBottom="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <!-- FOCUS STATUS -->
-        <TextView
-            android:id="@+id/tvFocusStatus"
-            android:text="Focus Mode: OFF"
-            android:textSize="16sp"
-            android:layout_marginBottom="20dp"
+            android:textColor="#FFFFFF"
+            android:layout_marginBottom="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:id="@+id/tvPermanentApps"
+            android:text="Control distractions. Build discipline."
+            android:textSize="13sp"
+            android:textColor="#9AA4B2"
+            android:layout_marginBottom="22dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- ================= FOCUS STATUS CARD ================= -->
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Permanent Apps"
-            android:textSize="14sp"
-            android:layout_marginTop="12dp"/>
+            android:orientation="vertical"
+            android:background="#151A21"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
+            <TextView
+                android:text="Today's Screen Time"
+                android:textSize="13sp"
+                android:textColor="#9AA4B2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/tvWeeklySummary"
+            <TextView
+                android:id="@+id/tvScreenTime"
+                android:text="0 min"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvFocusStatus"
+                android:text="Focus Mode: OFF"
+                android:textSize="14sp"
+                android:textColor="#4CAF50"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <!-- ================= PERMANENT APPS CARD ================= -->
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Weekly Screen Time"
-            android:padding="12dp"
-            android:textSize="14sp"/>
+            android:orientation="vertical"
+            android:background="#151A21"
+            android:padding="18dp"
+            android:layout_marginBottom="16dp">
 
+            <TextView
+                android:text="Permanent Blocked Apps"
+                android:textSize="13sp"
+                android:textColor="#9AA4B2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
-        <!-- BUTTONS -->
+            <TextView
+                android:id="@+id/tvPermanentApps"
+                android:text="No apps selected"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <!-- ================= WEEKLY SUMMARY CARD ================= -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#151A21"
+            android:padding="18dp"
+            android:layout_marginBottom="22dp">
+
+            <TextView
+                android:text="Weekly Summary"
+                android:textSize="13sp"
+                android:textColor="#9AA4B2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/tvWeeklySummary"
+                android:text="Weekly Screen Time"
+                android:textSize="15sp"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <!-- ================= ACTION BUTTONS ================= -->
+
         <Button
             android:id="@+id/btnEditBlocked"
-            android:text="Edit Blocked Apps"
+            android:text="Edit Temporary Blocked Apps"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/btnPermanentApps"
-            android:text="View Permanent Apps"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_height="54dp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#2979FF"
+            android:layout_marginBottom="12dp"/>
 
         <Button
             android:id="@+id/btnReschedule"
             android:text="Reschedule Focus Time"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"/>
+            android:layout_height="54dp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#1565C0"
+            android:layout_marginBottom="26dp"/>
 
-
-        <!-- ============================= -->
-        <!-- 🔁 Monthly Setup Reset Area -->
-        <!-- ============================= -->
-
-        <TextView
-            android:id="@+id/tvLastReset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Last reset: Not yet"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:gravity="center"
-            android:layout_marginTop="24dp" />
-
-        <TextView
-            android:id="@+id/tvResetInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="(updates in 1 month)"
-            android:textSize="12sp"
-            android:textColor="#888888"
-            android:gravity="center"
-            android:layout_marginBottom="8dp" />
 
         <Button
-            android:id="@+id/btnMonthlyReset"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/btnPermanentApps"
             android:text="RESET SETUP"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
             android:textColor="#FFFFFF"
-            android:backgroundTint="#D32F2F"
-            android:layout_margin="16dp" />
+            android:textStyle="bold"
+            android:backgroundTint="#1E88E5"
+            android:layout_marginBottom="12dp"/>
+
+
 
     </LinearLayout>
 </ScrollView>

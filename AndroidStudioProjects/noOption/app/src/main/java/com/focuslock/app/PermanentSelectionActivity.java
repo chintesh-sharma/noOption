@@ -75,7 +75,7 @@ public class PermanentSelectionActivity extends AppCompatActivity {
                 this,
                 readOnly
                         ? android.R.layout.simple_list_item_1
-                        : android.R.layout.simple_list_item_multiple_choice,
+                        : R.layout.row_app_item,
                 appNames
         );
 
@@ -94,14 +94,16 @@ public class PermanentSelectionActivity extends AppCompatActivity {
                     }
                 }
 
-                // 🔒 SAVE PERMANENT APPS (NO MIXING WITH TEMP)
+                // 🔒 SAVE PERMANENT APPS (OLD LOGIC SAME)
                 prefs.edit()
                         .putStringSet("PERMANENT_BLOCKED_APPS", permanentApps)
                         .remove("TEMP_SELECTED_APPS")
+                        // ✅ ADD ONLY (THIS WAS MISSING)
+                        .putLong("PERMANENT_LOCK_START", System.currentTimeMillis())
                         .apply();
 
                 // ==========================
-                // 🤖 GEMINI (PERMANENT FALLBACK ONLY)
+                // 🤖 GEMINI (UNCHANGED)
                 // ==========================
                 GeminiTextHelper.generateText(
                         "Permanent app blocking activated. Send a short funny motivational line.",
@@ -136,7 +138,7 @@ public class PermanentSelectionActivity extends AppCompatActivity {
                         }
                 );
 
-                // ▶️ Resume blocking AFTER setup
+                // ▶️ Resume blocking AFTER setup (UNCHANGED)
                 prefs.edit()
                         .putBoolean("SETUP_IN_PROGRESS", false)
                         .apply();

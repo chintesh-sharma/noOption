@@ -18,6 +18,8 @@ public class BlockActivity extends AppCompatActivity {
     private TextView tvBlockMessage, tvTimeLeft;
     private CountDownTimer timer;
     SharedPreferences prefs;
+    private String blockType;
+    private String blockedPkg;
 
     private static final String[] MESSAGES = {
             "Focus mode ON 🔒",
@@ -48,7 +50,9 @@ public class BlockActivity extends AppCompatActivity {
                 MESSAGES[new Random().nextInt(MESSAGES.length)]
         );
 
-        String blockType = getIntent().getStringExtra("BLOCK_TYPE");
+        blockType = getIntent().getStringExtra("BLOCK_TYPE");
+        blockedPkg = getIntent().getStringExtra("BLOCKED_PKG");
+
         startCorrectTimer(blockType);
 
         // 🔒 Back → Home
@@ -85,8 +89,16 @@ public class BlockActivity extends AppCompatActivity {
             );
         }
 
+        // 🚫 SETTINGS → NEVER SHOW FINISH
+        if ("com.android.settings".equals(blockedPkg)) {
+            if (remainingMs <= 0) {
+                tvTimeLeft.setText("");
+            }
+            return;
+        }
+
         if (remainingMs <= 0) {
-            tvTimeLeft.setText("Focus finished ✔️");
+            showFinishText(type);
             return;
         }
 
@@ -100,10 +112,23 @@ public class BlockActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                tvTimeLeft.setText("Focus finished ✔️");
+                showFinishText(type);
             }
         };
         timer.start();
+    }
+
+    // ================= FINISH TEXT =================
+    private void showFinishText(String type) {
+        if ("PERM".equals(type)) {
+            tvTimeLeft.setText("Permanent focus finished ✔️");
+        } else if ("WEB".equals(type)) {
+            tvTimeLeft.setText("Website focus finished ✔️");
+        } else if ("TEMP".equals(type)) {
+            tvTimeLeft.setText("Temporary focus finished ✔️");
+        } else {
+            tvTimeLeft.setText("");
+        }
     }
 
     private long getRemainingMillis(

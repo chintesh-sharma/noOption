@@ -4,10 +4,12 @@ import android.app.AppOpsManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,19 +19,29 @@ public class PermissionSetupActivity extends AppCompatActivity {
     Button btnAccessibility, btnBattery, btnAppSettings,
             btnUsageAccess, btnAutostart, btnContinue;
 
+    // 🔹 NEW (for How to use)
+    TextView tvHowTo;
+
     private static final int REQ_DEVICE_ADMIN = 1001;
+
+    SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_permission_setup);
 
+        prefs = getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
+
         btnAccessibility = findViewById(R.id.btnAccessibility);
         btnBattery = findViewById(R.id.btnBattery);
         btnAppSettings = findViewById(R.id.btnAppSettings);
         btnUsageAccess = findViewById(R.id.btnUsageAccess);
-        btnAutostart = findViewById(R.id.btnAutostart); // ✅ NEW
+        btnAutostart = findViewById(R.id.btnAutostart);
         btnContinue = findViewById(R.id.btnContinue);
+
+        // 🔹 NEW: How to use TextView
+        tvHowTo = findViewById(R.id.tvHowTo);
 
         // ---------------- EXISTING ----------------
 
@@ -38,6 +50,9 @@ public class PermissionSetupActivity extends AppCompatActivity {
         );
 
         btnBattery.setOnClickListener(v -> {
+
+            prefs.edit().putBoolean("BATTERY_STEP_DONE", true).apply();
+
             try {
                 startActivity(
                         new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
@@ -47,15 +62,23 @@ public class PermissionSetupActivity extends AppCompatActivity {
             }
         });
 
-        btnAppSettings.setOnClickListener(v -> openAppSettingsSafely());
+        btnAppSettings.setOnClickListener(v -> {
+
+            prefs.edit().putBoolean("APP_SETTINGS_STEP_DONE", true).apply();
+
+            openAppSettingsSafely();
+        });
 
         btnUsageAccess.setOnClickListener(v ->
                 startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         );
 
-        // ---------------- NEW : AUTOSTART ----------------
+        btnAutostart.setOnClickListener(v -> {
 
-        btnAutostart.setOnClickListener(v -> openAutostartSettings());
+            prefs.edit().putBoolean("AUTOSTART_STEP_DONE", true).apply();
+
+            openAutostartSettings();
+        });
 
         // ---------------- CONTINUE (UNCHANGED) ----------------
 
@@ -73,6 +96,61 @@ public class PermissionSetupActivity extends AppCompatActivity {
 
             requestDeviceAdmin();
         });
+
+        // =================================================
+        // 🔹 NEW: HOW TO USE LINK (ONLY UI HELP)
+        // =================================================
+        tvHowTo.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://www.youtube.com/watch?v=YOUR_VIDEO_ID")
+            );
+            startActivity(intent);
+        });
+    }
+
+    // ================= UI STATUS UPDATE =================
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (PermissionUtils.isAccessibilityEnabled(this)) {
+            btnAccessibility.setText("Accessibility Enabled ✓");
+            btnAccessibility.setEnabled(false);
+            btnAccessibility.setBackgroundTintList(
+                    getColorStateList(android.R.color.holo_blue_dark)
+            );
+        }
+
+        if (isUsageAccessGranted()) {
+            btnUsageAccess.setText("Usage Access Enabled ✓");
+            btnUsageAccess.setEnabled(false);
+            btnUsageAccess.setBackgroundTintList(
+                    getColorStateList(android.R.color.holo_blue_dark)
+            );
+        }
+
+        if (prefs.getBoolean("BATTERY_STEP_DONE", false)) {
+            btnBattery.setText("Battery Optimization Checked ✓");
+            btnBattery.setBackgroundTintList(
+                    getColorStateList(android.R.color.holo_blue_dark)
+            );
+        }
+
+        if (prefs.getBoolean("APP_SETTINGS_STEP_DONE", false)) {
+            btnAppSettings.setText("Background Activity Checked ✓");
+            btnAppSettings.setBackgroundTintList(
+                    getColorStateList(android.R.color.holo_blue_dark)
+            );
+        }
+
+        if (prefs.getBoolean("AUTOSTART_STEP_DONE", false)) {
+            btnAutostart.setText("Autostart Checked ✓");
+            btnAutostart.setBackgroundTintList(
+                    getColorStateList(android.R.color.holo_blue_dark)
+            );
+        }
     }
 
     // ================= DEVICE ADMIN (UNCHANGED) =================
@@ -177,11 +255,10 @@ public class PermissionSetupActivity extends AppCompatActivity {
         }
     }
 
-    // ================= NEW : AUTOSTART =================
+    // ================= AUTOSTART (UNCHANGED) =================
 
     private void openAutostartSettings() {
         try {
-            // MIUI Autostart
             Intent intent = new Intent();
             intent.setClassName(
                     "com.miui.securitycenter",
@@ -191,7 +268,6 @@ public class PermissionSetupActivity extends AppCompatActivity {
 
         } catch (Exception e1) {
             try {
-                // App info fallback
                 Intent intent =
                         new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 intent.setData(Uri.parse("package:" + getPackageName()));

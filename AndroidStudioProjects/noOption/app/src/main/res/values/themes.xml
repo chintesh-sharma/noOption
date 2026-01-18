@@ -1,9 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- ========================= -->
+    <!-- BASE THEME -->
+    <!-- ========================= -->
     <style name="Base.Theme.NoOption" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Brand colors -->
+        <item name="colorPrimary">#0A0F1F</item>       <!-- dark blue-black -->
+        <item name="colorPrimaryVariant">#0A0F1F</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- Accent blue -->
+        <item name="colorSecondary">#2979FF</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <!-- App background -->
+        <item name="android:windowBackground">#000000</item>
+
+        <!-- Status bar -->
+        <item name="android:statusBarColor">#0A0F1F</item>
+
+        <!-- White icons in status bar -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- System draws bars -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
     </style>
 
+    <!-- ========================= -->
+    <!-- APP THEME -->
+    <!-- ========================= -->
     <style name="Theme.NoOption" parent="Base.Theme.NoOption" />
+
 </resources>

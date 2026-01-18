@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#000000"
+    android:padding="36dp">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Setup Complete"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- Thin divider -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="2dp"
+        android:background="#2979FF"
+        android:layout_marginBottom="18dp"/>
+
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Focus system is ready"
+        android:textColor="#CCCCCC"
+        android:textSize="15sp"
+        android:layout_marginBottom="4dp"/>
+
+    <!-- Tagline -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stay disciplined. No distractions."
+        android:textColor="#8A8A8A"
+        android:textSize="13sp"
+        android:gravity="center"/>
+
+    <!-- Spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="32dp"/>
+
+    <!-- Subtle hint -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Redirecting to dashboard…"
+        android:textColor="#555555"
+        android:textSize="12sp"/>
+
+</LinearLayout>

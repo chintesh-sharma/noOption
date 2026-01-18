@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
@@ -29,27 +30,46 @@ public class WebsiteTimerActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btnSaveWebTimer);
         btnSkip = findViewById(R.id.btnSkipWebTimer);
 
+        // 🚫 Pause blocking during setup (UNCHANGED IDEA)
+        getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE)
+                .edit()
+                .putBoolean("SETUP_IN_PROGRESS", true)
+                .apply();
+
         btnStartTime.setOnClickListener(v -> pickStartTime());
         btnEndTime.setOnClickListener(v -> pickEndTime());
 
+        // ⏭️ SKIP → setup complete screen → dashboard
         btnSkip.setOnClickListener(v -> {
             SharedPreferences prefs =
                     getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
 
-            //  WEBSITE TIMER SKIPPED
             prefs.edit()
                     .putBoolean("WEB_TIMER_SET", false)
-                    // ✅ MARK SETUP COMPLETE
                     .putBoolean("SETUP_COMPLETE", true)
+                    .putBoolean("SETUP_IN_PROGRESS", false)
                     .apply();
 
-            goToDashboard();
+            goToSetupComplete();
         });
 
+        // 💾 SAVE → setup complete screen → dashboard
         btnSave.setOnClickListener(v -> saveTimer());
+
+        // 🔒 BACK PROTECTION (same as permanent website screen)
+        getOnBackPressedDispatcher().addCallback(
+                this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        // App background me jayegi
+                        moveTaskToBack(true);
+                    }
+                }
+        );
     }
 
-    //  Start time picker
+    // ⏱ Start time picker
     private void pickStartTime() {
         TimePickerDialog dialog = new TimePickerDialog(
                 this,
@@ -66,7 +86,7 @@ public class WebsiteTimerActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    //  End time picker
+    // ⏱ End time picker
     private void pickEndTime() {
         TimePickerDialog dialog = new TimePickerDialog(
                 this,
@@ -83,7 +103,7 @@ public class WebsiteTimerActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    //  Save website timer
+    // 💾 SAVE WEBSITE TIMER
     private void saveTimer() {
 
         if (startHour == -1 || endHour == -1) {
@@ -104,8 +124,8 @@ public class WebsiteTimerActivity extends AppCompatActivity {
                 .putInt("WEB_END_HOUR", endHour)
                 .putInt("WEB_END_MIN", endMin)
                 .putBoolean("WEB_TIMER_SET", true)
-                // ✅ MARK SETUP COMPLETE
                 .putBoolean("SETUP_COMPLETE", true)
+                .putBoolean("SETUP_IN_PROGRESS", false)
                 .apply();
 
         Toast.makeText(
@@ -114,18 +134,18 @@ public class WebsiteTimerActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT
         ).show();
 
-        goToDashboard();
+        goToSetupComplete();
     }
 
-    //  Go to dashboard
-    private void goToDashboard() {
-        Intent i = new Intent(this, DashboardActivity.class);
+    // ✅ SETUP COMPLETE SCREEN (SAVE + SKIP BOTH)
+    private void goToSetupComplete() {
+        Intent i = new Intent(this, SetupCompleteActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(i);
         finish();
     }
 
-    //  AM/PM formatter
+    // 🕒 AM / PM formatter
     private String formatTime(int hour, int min) {
         String amPm = (hour >= 12) ? "PM" : "AM";
         int h = hour % 12;

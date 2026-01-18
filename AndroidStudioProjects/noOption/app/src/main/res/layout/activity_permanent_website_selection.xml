@@ -2,47 +2,90 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="#000000"
+    android:padding="20dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Title -->
         <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Block Websites"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="12dp"/>
+            android:textColor="#FFFFFF"
+            android:letterSpacing="0.02"
+            android:layout_marginBottom="6dp"/>
 
+        <!-- Subtitle -->
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prevent access to distracting websites during focus time"
+            android:textSize="13sp"
+            android:textColor="#9E9E9E"
+            android:layout_marginBottom="18dp"/>
+
+        <!-- Website List Container -->
         <LinearLayout
             android:id="@+id/websiteContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:background="#111111"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#777777"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- Add Website -->
         <Button
             android:id="@+id/btnAddWebsite"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:text="Add another website"
-            android:layout_marginTop="12dp"/>
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#1E88E5"
+            android:layout_marginBottom="18dp"/>
 
+        <!-- Info Text -->
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Blocked websites will be inaccessible during the selected focus schedule."
+            android:textSize="12sp"
+            android:textColor="#B0BEC5"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Continue -->
         <Button
             android:id="@+id/btnContinueWebsite"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Continue"
-            android:layout_marginTop="16dp"/>
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#2979FF"
+            android:layout_marginBottom="10dp"/>
 
+        <!-- Skip -->
         <Button
             android:id="@+id/btnSkipWebsite"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Skip"
-            android:layout_marginTop="8dp"/>
+            android:layout_height="48dp"
+            android:text="Skip for now"
+            android:textColor="#90CAF9"
+            android:backgroundTint="#000000"/>
 
     </LinearLayout>
 </ScrollView>

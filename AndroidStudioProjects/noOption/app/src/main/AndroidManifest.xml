@@ -22,7 +22,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NoOption">
-        <!-- ========================= -->
+        <activity
+            android:name=".SetupCompleteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="true"
+            android:resizeableActivity="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- ========================= -->
         <!-- NORMAL ACTIVITIES -->
         <!-- ========================= -->
         <activity
@@ -81,13 +93,7 @@
             android:name=".MainActivity"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:resizeableActivity="false">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity> <!-- ========================= -->
+            android:resizeableActivity="false" /> <!-- ========================= -->
         <!-- ACCESSIBILITY SERVICE -->
         <!-- ========================= -->
         <service

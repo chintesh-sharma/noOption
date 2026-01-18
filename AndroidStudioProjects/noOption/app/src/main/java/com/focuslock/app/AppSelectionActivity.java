@@ -58,12 +58,16 @@ public class AppSelectionActivity extends AppCompatActivity {
         loadInstalledApps();
         setupAdapter();
 
-        // 🔒 Already blocked (EXCEPT permanent)
+        // 🔒 Already blocked (EXCEPT permanent) — DEFENSIVE COPIES
         Set<String> alreadyBlocked =
-                prefs.getStringSet("BLOCKED_APPS", new HashSet<>());
+                new HashSet<>(
+                        prefs.getStringSet("BLOCKED_APPS", new HashSet<>())
+                );
 
         Set<String> permanentApps =
-                prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>());
+                new HashSet<>(
+                        prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>())
+                );
 
         for (String pkg : alreadyBlocked) {
             if (!permanentApps.contains(pkg)) {
@@ -76,14 +80,13 @@ public class AppSelectionActivity extends AppCompatActivity {
 
         btnSave.setOnClickListener(v -> {
 
-            // 🔥 CORE FIX
             rebuildCheckedFromUI();
 
             if (isEditMode) {
                 // ✏️ DASHBOARD EDIT
 
                 Set<String> finalBlocked = new HashSet<>(checkedPackages);
-                finalBlocked.addAll(permanentApps); // permanent always preserved
+                finalBlocked.addAll(permanentApps); // permanent preserved
 
                 prefs.edit()
                         .putStringSet("BLOCKED_APPS", finalBlocked)
@@ -114,9 +117,6 @@ public class AppSelectionActivity extends AppCompatActivity {
         });
     }
 
-    // ==============================
-    // 🛡️ SAFETY: resume blocking if user exits unexpectedly
-    // ==============================
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -132,7 +132,9 @@ public class AppSelectionActivity extends AppCompatActivity {
     private void loadInstalledApps() {
 
         Set<String> permanentApps =
-                prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>());
+                new HashSet<>(
+                        prefs.getStringSet("PERMANENT_BLOCKED_APPS", new HashSet<>())
+                );
 
         PackageManager pm = getPackageManager();
         List<ApplicationInfo> apps = pm.getInstalledApplications(0);
@@ -158,7 +160,7 @@ public class AppSelectionActivity extends AppCompatActivity {
     private void setupAdapter() {
         adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_list_item_multiple_choice,
+                R.layout.row_app_item,
                 getVisibleNames()
         );
         listApps.setAdapter(adapter);
@@ -194,9 +196,6 @@ public class AppSelectionActivity extends AppCompatActivity {
         });
     }
 
-    // ==============================
-    // CORE STATE SYNC
-    // ==============================
     private void rebuildCheckedFromUI() {
         checkedPackages.clear();
 
@@ -224,9 +223,6 @@ public class AppSelectionActivity extends AppCompatActivity {
         return names;
     }
 
-    // ==============================
-    // MODEL
-    // ==============================
     static class AppItem {
         String appName;
         String packageName;
