@@ -37,7 +37,8 @@
             android:id="@+id/tvWarning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Warning: You can permanently block websites only once during setup. Please confirm carefully."
+            android:text="Warning: 1. You can permanently block websites only once during setup. Please confirm carefully.
+                                    2. Setting will be blocked during Website focus time"
             android:textSize="12sp"
             android:textColor="#FF5252"
             android:padding="12dp"

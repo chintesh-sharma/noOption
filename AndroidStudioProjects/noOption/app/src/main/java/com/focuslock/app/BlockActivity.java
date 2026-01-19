@@ -176,6 +176,9 @@ public class BlockActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (timer != null) timer.cancel();
-        MyAccessibilityService.isBlockingScreenShown = false;
+
+        // 🔧 SAFE FLAG RESET (NO LOGIC CHANGE)
+        MyAccessibilityService.resetBlockingFlag();
     }
 }
+

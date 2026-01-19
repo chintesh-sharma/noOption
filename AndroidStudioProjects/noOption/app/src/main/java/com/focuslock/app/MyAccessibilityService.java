@@ -29,7 +29,6 @@ public class MyAccessibilityService extends AccessibilityService {
 
         if (event == null || event.getPackageName() == null) return;
 
-        // 🔥 LISTEN MORE EVENTS (ADD ONLY)
         int type = event.getEventType();
         if (type != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
                 && type != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
@@ -102,7 +101,6 @@ public class MyAccessibilityService extends AccessibilityService {
                 new HashSet<>(prefs.getStringSet(
                         "PERMANENT_BLOCKED_APPS", new HashSet<>()));
 
-        // 🔥 FAST BLOCK (NO UI WAIT)
         if (permActive && permanentApps.contains(pkg)) {
             showBlockSafely(pkg, "PERM");
             return;
@@ -192,7 +190,6 @@ public class MyAccessibilityService extends AccessibilityService {
 
         long now = System.currentTimeMillis();
 
-        // 🔥 FASTER THROTTLE (800ms → 300ms)
         if (isBlockingScreenShown && now - lastBlockTime < 300) return;
 
         isBlockingScreenShown = true;
@@ -254,5 +251,11 @@ public class MyAccessibilityService extends AccessibilityService {
         }
 
         return null;
+    }
+
+    // 🔧 ADDITION (SAFE): flag reset hook
+    // Call this from BlockActivity.onDestroy()
+    public static void resetBlockingFlag() {
+        isBlockingScreenShown = false;
     }
 }

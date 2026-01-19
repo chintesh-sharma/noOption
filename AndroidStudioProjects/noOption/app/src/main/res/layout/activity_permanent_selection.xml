@@ -30,7 +30,8 @@
         android:id="@+id/tvPermanentWarning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Warning: You can permanently block apps only once during setup. Please confirm carefully."
+        android:text="Warning: 1. You can permanently block apps only once during setup. Please confirm carefully.
+                               2. Setting will be blocked during Permanent focus time"
         android:textSize="13sp"
         android:textColor="#FF6B6B"
         android:background="#1A1A1A"

@@ -88,6 +88,7 @@ public class PermanentWebsiteSelectionActivity extends AppCompatActivity {
         EditText et = new EditText(this);
         et.setHint("Enter website (e.g. youtube.com)");
         et.setTextColor(Color.WHITE);
+        et.setHintTextColor(Color.WHITE);
         et.setSingleLine(true);
         et.setPadding(20, 20, 20, 20);
         websiteContainer.addView(et);
