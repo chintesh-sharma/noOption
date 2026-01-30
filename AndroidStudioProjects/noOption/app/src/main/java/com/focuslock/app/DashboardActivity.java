@@ -24,7 +24,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     // 🔥 TEST VALUE (CHANGE TO 1 MONTH LATER)
     private static final long PERMANENT_LOCK_DURATION =
-            30L * 24 * 60 * 60 * 1000; // 30 days
+            30L * 1000;
 
 
     @Override
@@ -66,7 +66,19 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadStatus();
+
+        // ✅ Start only if setup complete
+        if (prefs.getBoolean("SETUP_COMPLETE", false)) {
+
+            // ✅ Overlay permission check
+            if (android.provider.Settings.canDrawOverlays(this)) {
+
+                startService(new Intent(this, UsageFallbackService.class));
+
+            }
+        }
     }
+
 
     private void loadStatus() {
 

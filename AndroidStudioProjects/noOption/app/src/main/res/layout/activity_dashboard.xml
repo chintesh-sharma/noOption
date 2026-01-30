@@ -127,7 +127,7 @@
 
         <Button
             android:id="@+id/btnEditBlocked"
-            android:text="Edit Temporary Blocked Apps"
+            android:text="Add Temporary Block Apps"
             android:layout_width="match_parent"
             android:layout_height="54dp"
             android:textColor="#FFFFFF"
@@ -155,6 +155,17 @@
             android:textStyle="bold"
             android:backgroundTint="#1E88E5"
             android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnEmergency"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:text="🚨 Emergency Help (1 min)"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#D32F2F"
+            android:layout_marginTop="12dp"/>
+
 
 
 
