@@ -17,7 +17,7 @@ import java.util.Set;
 public class DashboardActivity extends AppCompatActivity {
 
     TextView tvScreenTime, tvFocusStatus, tvPermanentApps, tvWeeklySummary;
-    Button btnEditBlocked, btnPermanentApps, btnReschedule;
+    Button btnEditBlocked, btnPermanentApps, btnReschedule, btnEmergency;
 
     SharedPreferences prefs;
     PackageManager pm;
@@ -43,6 +43,8 @@ public class DashboardActivity extends AppCompatActivity {
         btnEditBlocked = findViewById(R.id.btnEditBlocked);
         btnPermanentApps = findViewById(R.id.btnPermanentApps);
         btnReschedule = findViewById(R.id.btnReschedule);
+        btnEmergency = findViewById(R.id.btnEmergency);
+
 
         btnEditBlocked.setOnClickListener(v -> {
             Intent intent = new Intent(this, AppSelectionActivity.class);
@@ -51,21 +53,82 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         // 🔓 Permanent unlock → Permission setup
-        btnPermanentApps.setOnClickListener(v ->
-                startActivity(new Intent(this, PermissionSetupActivity.class))
-        );
+        btnPermanentApps.setOnClickListener(v -> {
+
+            // ✅ 1. Stop overlay service
+            stopService(new Intent(this, OverlayProtectionService.class));
+
+            // ✅ 2. Stop fallback service
+            stopService(new Intent(this, UsageFallbackService.class));
+
+            // ✅ 3. Clear ALL saved data
+            SharedPreferences prefs =
+                    getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
+
+            prefs.edit().clear().apply();
+
+            // ✅ 4. Reset runtime flags
+            OverlayProtectionService.isOverlayShowing = false;
+            MyAccessibilityService.resetBlockingFlag();
+
+            // ✅ 5. Open Setup fresh
+            Intent intent =
+                    new Intent(this, PermissionSetupActivity.class);
+
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+            startActivity(intent);
+
+            finish();
+        });
+
 
         btnReschedule.setOnClickListener(v -> {
             Intent i = new Intent(this, FocusTimerActivity.class);
             i.putExtra("EDIT_MODE", true);
             startActivity(i);
         });
+
+        btnEmergency.setOnClickListener(v -> {
+
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Emergency Help")
+                    .setMessage("Now all blocked apps and websites are open for 1 minute.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", (dialog, which) -> {
+
+
+                        SharedPreferences prefs =
+                                getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
+
+                        long now = System.currentTimeMillis();
+                        long unlockUntil = now + (60 * 1000);
+
+                        prefs.edit()
+                                .putLong("EMERGENCY_UNLOCK_UNTIL", unlockUntil)
+                                .putLong("EMERGENCY_LAST_USED", now)   // ✅ ADD THIS
+                                .apply();
+
+// disable button immediately
+                        btnEmergency.setEnabled(false);
+                        btnEmergency.setAlpha(0.4f);
+                        btnEmergency.setText("Emergency Help (Used Today)");
+
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
+        });
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadStatus();
+
+        updateEmergencyButtonState();
 
         // ✅ Start only if setup complete
         if (prefs.getBoolean("SETUP_COMPLETE", false)) {
@@ -287,4 +350,45 @@ public class DashboardActivity extends AppCompatActivity {
 
         return totalTime;
     }
+
+    private void updateEmergencyButtonState() {
+
+        long lastUsed =
+                prefs.getLong("EMERGENCY_LAST_USED", 0);
+
+        if (lastUsed == 0) {
+            enableEmergencyButton();
+            return;
+        }
+
+        Calendar last = Calendar.getInstance();
+        last.setTimeInMillis(lastUsed);
+
+        Calendar today = Calendar.getInstance();
+
+        boolean sameDay =
+                last.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+                        && last.get(Calendar.DAY_OF_YEAR)
+                        == today.get(Calendar.DAY_OF_YEAR);
+
+        if (sameDay) {
+
+            btnEmergency.setEnabled(false);
+            btnEmergency.setAlpha(0.4f);
+            btnEmergency.setText("Emergency Help (Used Today)");
+
+        } else {
+
+            enableEmergencyButton();
+        }
+    }
+
+    private void enableEmergencyButton() {
+
+        btnEmergency.setEnabled(true);
+        btnEmergency.setAlpha(1f);
+        btnEmergency.setText("Emergency Help");
+    }
+
+
 }

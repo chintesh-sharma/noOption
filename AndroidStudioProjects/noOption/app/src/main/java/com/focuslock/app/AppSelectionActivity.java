@@ -189,7 +189,10 @@ public class AppSelectionActivity extends AppCompatActivity {
                 adapter.addAll(getVisibleNames());
                 adapter.notifyDataSetChanged();
 
+                listApps.clearChoices();   // ⭐ ADD THIS LINE
+
                 restoreCheckedToList();
+
             }
 
             @Override public void afterTextChanged(Editable s) {}
@@ -197,15 +200,21 @@ public class AppSelectionActivity extends AppCompatActivity {
     }
 
     private void rebuildCheckedFromUI() {
-        checkedPackages.clear();
 
         SparseBooleanArray checked = listApps.getCheckedItemPositions();
+
         for (int i = 0; i < visibleApps.size(); i++) {
+
+            String pkg = visibleApps.get(i).packageName;
+
             if (checked.get(i)) {
-                checkedPackages.add(visibleApps.get(i).packageName);
+                checkedPackages.add(pkg);
+            } else {
+                checkedPackages.remove(pkg);
             }
         }
     }
+
 
     private void restoreCheckedToList() {
         for (int i = 0; i < visibleApps.size(); i++) {

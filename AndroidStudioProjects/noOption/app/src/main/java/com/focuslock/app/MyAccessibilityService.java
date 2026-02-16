@@ -24,6 +24,15 @@ public class MyAccessibilityService extends AccessibilityService {
     public static boolean isBlockingScreenShown = false;
     private static long lastBlockTime = 0;
 
+    private long lastRecentsOverlayTime = 0;
+
+    private static long lastRecentsTriggerTime = 0;
+
+    private static final long RECENTS_COOLDOWN = 1500; // 1.5 sec protection
+
+
+
+
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
 
@@ -32,11 +41,115 @@ public class MyAccessibilityService extends AccessibilityService {
         int type = event.getEventType();
         if (type != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
                 && type != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
-                && type != AccessibilityEvent.TYPE_VIEW_FOCUSED) {
+                && type != AccessibilityEvent.TYPE_VIEW_FOCUSED
+                && type != AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
             return;
         }
 
         String pkg = event.getPackageName().toString();
+
+        // ================= UNIVERSAL RECENTS DETECT =================
+
+        AccessibilityNodeInfo root = getRootInActiveWindow();
+
+        boolean isRecentsScreen = false;
+
+        if (root != null) {
+
+            // different brands use different texts
+            String[] recentsKeywords = {
+                    "Clear",
+                    "Clear all",
+                    "Close all",
+                    "Close All",
+                    "Recent",
+                    "No recent items"
+            };
+
+            for (String keyword : recentsKeywords) {
+
+                List<AccessibilityNodeInfo> nodes =
+                        root.findAccessibilityNodeInfosByText(keyword);
+
+                if (nodes != null && !nodes.isEmpty()) {
+                    isRecentsScreen = true;
+                    break;
+                }
+            }
+        }
+
+        if (isRecentsScreen) {
+
+            SharedPreferences prefs =
+                    getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
+
+            prefs.edit()
+                    .putBoolean("RECENTS_OPEN", true)
+                    .apply();
+
+            return;
+        }
+
+
+        // ✅ EMERGENCY UNLOCK CHECK
+        long unlockUntil =
+                getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE)
+                        .getLong("EMERGENCY_UNLOCK_UNTIL", 0);
+
+        boolean emergencyActive =
+                System.currentTimeMillis() < unlockUntil;
+
+        if (emergencyActive
+                && !pkg.equals("com.android.settings")) {
+
+            stopService(new Intent(this, OverlayProtectionService.class));
+
+            return;
+        }
+
+
+        // ===== MIUI RECENTS DETECT USING CLEAR ALL BUTTON (CRASH SAFE) =====
+        // ===== MIUI RECENTS DETECT (SAFE) =====
+        if (pkg.equals("com.miui.home")) {
+
+             root = getRootInActiveWindow();
+
+            if (root != null) {
+
+                List<AccessibilityNodeInfo> clearButtons =
+                        root.findAccessibilityNodeInfosByText("Clear");
+
+                if (clearButtons != null && !clearButtons.isEmpty()) {
+
+                    // ✅ DO NOT trigger if overlay already showing
+                    if (OverlayProtectionService.isOverlayShowing) {
+                        return;
+                    }
+
+                    long now = System.currentTimeMillis();
+
+                    if (now - lastRecentsTriggerTime < RECENTS_COOLDOWN) {
+                        return;
+                    }
+
+                    lastRecentsTriggerTime = now;
+
+                    SharedPreferences prefs =
+                            getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
+
+                    // ✅ Set flag only once safely
+                    prefs.edit()
+                            .putBoolean("RECENTS_OPEN", true)
+                            .apply();
+
+                    return;
+                }
+
+
+            }
+        }
+
+
 
         if (pkg.equals(getPackageName())
                 || pkg.equals("com.android.systemui")
@@ -81,6 +194,14 @@ public class MyAccessibilityService extends AccessibilityService {
         if ((permForSettings || webForSettings)
                 && pkg.equals("com.android.settings")) {
             showBlockSafely(pkg, "PERM");
+
+
+            // force exit floating mode
+            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+            homeIntent.addCategory(Intent.CATEGORY_HOME);
+            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(homeIntent);
+
             return;
         }
 

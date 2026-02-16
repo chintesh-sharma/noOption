@@ -181,4 +181,3 @@ public class BlockActivity extends AppCompatActivity {
         MyAccessibilityService.resetBlockingFlag();
     }
 }
-

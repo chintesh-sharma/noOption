@@ -28,6 +28,8 @@ public class UsageFallbackService extends Service {
     // ✅ FIX: Cached last foreground pkg (Overlay sticky banega)
     private String lastForegroundPkg = "";
 
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -58,7 +60,7 @@ public class UsageFallbackService extends Service {
                 checkAndControlOverlay();
             } catch (Exception ignored) {}
 
-            handler.postDelayed(checker, 1000);
+            handler.postDelayed(checker, 20);
         };
 
         handler.post(checker);
@@ -70,12 +72,53 @@ public class UsageFallbackService extends Service {
     // =================================================
     private void checkAndControlOverlay() {
 
+
         SharedPreferences prefs =
                 getSharedPreferences("FOCUS_PREFS", MODE_PRIVATE);
+
+        boolean recentsOpen =
+                prefs.getBoolean("RECENTS_OPEN", false);
+
+        if (recentsOpen) {
+
+            startOverlay();
+
+            prefs.edit()
+                    .putBoolean("RECENTS_OPEN", false)
+                    .apply();
+
+            return;
+        }
+
+        long unlockUntil =
+                prefs.getLong("EMERGENCY_UNLOCK_UNTIL", 0);
+
+        boolean emergencyActive =
+                System.currentTimeMillis() < unlockUntil;
+
+        if (emergencyActive) {
+            stopOverlay();
+            return;
+        }
+
+
+
 
         // ❌ Setup ke time kabhi overlay nahi
         if (prefs.getBoolean("SETUP_IN_PROGRESS", false)) {
             stopOverlay();
+            return;
+        }
+
+         recentsOpen =
+                prefs.getBoolean("RECENTS_OPEN", false);
+
+        if (recentsOpen) {
+
+            startOverlay();
+
+            prefs.edit().putBoolean("RECENTS_OPEN", false).apply();
+
             return;
         }
 
